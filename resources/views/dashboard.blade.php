@@ -246,6 +246,8 @@
             @endforeach
         </section>
 
+        @include('dashboard.partials.ai-prediction-card', ['latestAiPrediction' => $latestAiPrediction])
+
         {{--
             Main analytics section:
             Left = large telemetry chart

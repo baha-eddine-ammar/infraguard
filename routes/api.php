@@ -18,6 +18,8 @@
 | 2. app/Http/Controllers/Api/ServerMetricsController.php
 | 3. app/Models/Server.php and app/Models/ServerMetric.php
 */
+use App\Http\Controllers\Api\AiPredictionController;
+use App\Http\Controllers\Api\AiInputController;
 use App\Http\Controllers\Api\ClimateReadingController;
 use App\Http\Controllers\Api\PowerReadingController;
 use App\Http\Controllers\Api\SensorReadingController;
@@ -44,3 +46,11 @@ Route::get('/climate-readings/latest', [ClimateReadingController::class, 'latest
 Route::post('/power-readings', [PowerReadingController::class, 'store'])
     ->middleware('throttle:sensor-readings')
     ->name('api.power-readings.store');
+
+Route::post('/ai-predictions', [AiPredictionController::class, 'store'])
+    ->middleware('throttle:sensor-readings')
+    ->name('api.ai-predictions.store');
+
+Route::get('/ai-input/latest', [AiInputController::class, 'latest'])
+    ->middleware('throttle:sensor-readings')
+    ->name('api.ai-input.latest');

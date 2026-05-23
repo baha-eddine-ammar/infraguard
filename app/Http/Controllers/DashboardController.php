@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AiPrediction;
 use App\Services\EnvironmentalTelemetryService;
 use App\Services\LocalSystemStatusService;
 use Illuminate\Http\JsonResponse;
@@ -27,6 +28,7 @@ class DashboardController extends Controller
             'humidityData' => $this->buildHumidityPayload($humidity),
             'trendData' => $this->resolveTrendData(),
             'servers' => $this->serverCards(),
+            'latestAiPrediction' => AiPrediction::query()->latest()->first(),
         ]);
     }
 
