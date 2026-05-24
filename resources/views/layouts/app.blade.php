@@ -28,8 +28,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Server Room Supervision') }}</title>
+        <title>InfraGuard | Server Room Supervision</title>
 
+        @include('layouts.partials.pwa-head')
         @include('layouts.partials.brand-preloader-head')
 
         <script>
@@ -57,7 +58,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/monitoring-widgets.jsx'])
     </head>
     <body
-        class="app-shell"
+        class="app-shell overflow-x-hidden"
         data-auth-user-id="{{ auth()->id() }}"
         data-auth-user-role="{{ auth()->user()?->role }}"
         x-data="{ profileOpen: false, notificationOpen: false }"
@@ -72,10 +73,10 @@
         <div class="min-h-screen lg:flex">
             @include('layouts.sidebar')
 
-            <div class="flex min-h-screen flex-1 flex-col transition-[padding] duration-300 ease-in-out" :class="$store.sidebar.open ? 'lg:pl-[290px]' : 'lg:pl-0'">
+            <div class="flex min-h-screen min-w-0 flex-1 flex-col transition-[padding] duration-300 ease-in-out" :class="$store.sidebar.open ? 'lg:pl-[290px]' : 'lg:pl-0'">
                 @include('layouts.topbar')
 
-                <main class="flex-1 px-4 pb-8 pt-4 sm:px-6 lg:px-8">
+                <main class="app-main-content min-w-0 flex-1 px-4 pb-8 pt-4 sm:px-6 lg:px-8">
                     @isset($header)
                         <section class="mb-6">
                             {{ $header }}
@@ -89,6 +90,7 @@
             </div>
         </div>
 
+        @include('layouts.pwa-bottom-nav')
         @include('layouts.scripts.live-server-panel')
     </body>
 </html>

@@ -69,8 +69,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Server Room Supervision') }}</title>
+        <title>InfraGuard | Server Room Supervision</title>
 
+        @include('layouts.partials.pwa-head')
         @include('layouts.partials.brand-preloader-head')
 
         <script>
@@ -115,7 +116,15 @@
                         </div>
                     </a>
 
-                    <div class="flex items-center gap-3">
+                    <div class="flex flex-wrap items-center justify-end gap-3">
+                        <button
+                            type="button"
+                            class="app-button-secondary px-4 py-2.5 sm:px-5"
+                            data-home-view-switch
+                        >
+                            Switch to Landing View
+                        </button>
+
                         @auth
                             <a href="{{ $dashboardUrl }}" class="app-button-secondary px-4 py-2.5 sm:px-5">Dashboard</a>
                         @else
@@ -127,6 +136,149 @@
             </header>
 
             <main>
+                <section data-home-panel="live" class="px-4 pb-14 pt-10 sm:px-6 lg:px-8 lg:pb-18 lg:pt-14">
+                    <div class="mx-auto max-w-7xl">
+                        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                            <div class="max-w-3xl">
+                                <span class="app-pill bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-300">
+                                    Public live monitoring
+                                </span>
+                                <h1 class="mt-6 font-display text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl lg:text-[58px] lg:leading-[1.02] dark:text-white">
+                                    InfraGuard live server room supervision.
+                                </h1>
+                                <p class="mt-5 max-w-2xl text-base leading-7 text-gray-500 dark:text-gray-400 sm:text-lg">
+                                    View safe read-only telemetry from the server room before signing in. Live values refresh automatically without exposing sensor tokens or private user data.
+                                </p>
+                            </div>
+
+                            <div class="flex flex-wrap gap-3">
+                                @auth
+                                    <a href="{{ $dashboardUrl }}" class="app-button-primary">Open Dashboard</a>
+                                @else
+                                    <a href="{{ $loginUrl }}" class="app-button-primary">Login</a>
+                                    <a href="{{ $registerUrl }}" class="app-button-secondary">Register</a>
+                                @endauth
+                            </div>
+                        </div>
+
+                        <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4" data-public-live-cards>
+                            <article class="public-live-card public-live-card--temperature">
+                                <div class="public-live-card__header">
+                                    <div>
+                                        <p class="public-live-card__eyebrow">Temperature</p>
+                                        <h2 class="public-live-card__title">Rack climate</h2>
+                                    </div>
+                                    <span class="public-live-status public-live-status--loading" data-public-live-status="temperature">Loading</span>
+                                </div>
+                                <p class="public-live-value" data-public-live-field="temperature.value">--</p>
+                                <p class="public-live-meta" data-public-live-field="temperature.updated">Loading latest reading...</p>
+                            </article>
+
+                            <article class="public-live-card public-live-card--humidity">
+                                <div class="public-live-card__header">
+                                    <div>
+                                        <p class="public-live-card__eyebrow">Humidity</p>
+                                        <h2 class="public-live-card__title">Moisture balance</h2>
+                                    </div>
+                                    <span class="public-live-status public-live-status--loading" data-public-live-status="humidity">Loading</span>
+                                </div>
+                                <p class="public-live-value" data-public-live-field="humidity.value">--</p>
+                                <p class="public-live-meta" data-public-live-field="humidity.updated">Loading latest reading...</p>
+                            </article>
+
+                            <article class="public-live-card public-live-card--airflow">
+                                <div class="public-live-card__header">
+                                    <div>
+                                        <p class="public-live-card__eyebrow">Air Flow</p>
+                                        <h2 class="public-live-card__title">Cooling route</h2>
+                                    </div>
+                                    <span class="public-live-status public-live-status--awaiting" data-public-live-status="airflow">Awaiting sensor</span>
+                                </div>
+                                <p class="public-live-value" data-public-live-field="airflow.value">Awaiting sensor</p>
+                                <p class="public-live-meta" data-public-live-field="airflow.updated">Feed not connected yet</p>
+                            </article>
+
+                            <article class="public-live-card public-live-card--power">
+                                <div class="public-live-card__header">
+                                    <div>
+                                        <p class="public-live-card__eyebrow">Power Usage</p>
+                                        <h2 class="public-live-card__title">Rack draw</h2>
+                                    </div>
+                                    <span class="public-live-status public-live-status--loading" data-public-live-status="power">Loading</span>
+                                </div>
+                                <p class="public-live-value" data-public-live-field="power.value">--</p>
+                                <p class="public-live-meta" data-public-live-field="power.detail">Voltage/current loading...</p>
+                                <p class="public-live-meta" data-public-live-field="power.updated">Loading latest reading...</p>
+                            </article>
+                        </div>
+
+                        <section class="public-live-ai-card mt-5" data-public-ai-card>
+                            <div class="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)]">
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center justify-between gap-3">
+                                        <div>
+                                            <p class="public-live-card__eyebrow">AI Predictive Maintenance</p>
+                                            <h2 class="mt-2 font-display text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">Rack failure risk</h2>
+                                        </div>
+                                        <span class="public-live-status public-live-status--loading" data-public-live-status="ai">Loading</span>
+                                    </div>
+                                    <p class="mt-4 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                                        Latest Isolation Forest prediction received by Laravel from the external AI workflow.
+                                    </p>
+
+                                    <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                                        <div class="public-live-ai-tile">
+                                            <p>Rack health</p>
+                                            <strong data-public-live-field="ai.health">--</strong>
+                                        </div>
+                                        <div class="public-live-ai-tile">
+                                            <p>Failure probability</p>
+                                            <strong data-public-live-field="ai.failure">--</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="min-w-0 rounded-3xl border border-white/70 bg-white/70 p-4 dark:border-white/10 dark:bg-white/[0.04] sm:p-5">
+                                    <div class="grid gap-4 sm:grid-cols-3">
+                                        <div>
+                                            <p class="public-live-card__eyebrow">AI temp</p>
+                                            <p class="public-live-ai-value" data-public-live-field="ai.temperature">--</p>
+                                        </div>
+                                        <div>
+                                            <p class="public-live-card__eyebrow">AI power</p>
+                                            <p class="public-live-ai-value" data-public-live-field="ai.power">--</p>
+                                        </div>
+                                        <div>
+                                            <p class="public-live-card__eyebrow">Anomaly score</p>
+                                            <p class="public-live-ai-value" data-public-live-field="ai.anomaly">--</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-5 space-y-4 text-sm leading-7">
+                                        <div>
+                                            <p class="font-semibold text-slate-950 dark:text-white">Main cause</p>
+                                            <p class="text-slate-500 dark:text-slate-400" data-public-live-field="ai.cause">Loading prediction...</p>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-slate-950 dark:text-white">Explanation</p>
+                                            <p class="text-slate-500 dark:text-slate-400" data-public-live-field="ai.explanation">Loading prediction...</p>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-slate-950 dark:text-white">Recommendation</p>
+                                            <p class="text-slate-500 dark:text-slate-400" data-public-live-field="ai.recommendation">Loading prediction...</p>
+                                        </div>
+                                    </div>
+
+                                    <p class="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500" data-public-live-field="ai.updated">
+                                        Loading latest AI update...
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </section>
+
+                <div data-home-panel="landing" class="hidden">
                 <section class="px-4 pb-14 pt-10 sm:px-6 lg:px-8 lg:pb-18 lg:pt-16">
                     <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.05fr)_460px] lg:items-center xl:gap-12">
                         <div class="max-w-2xl">
@@ -355,6 +507,7 @@
                         </div>
                     </div>
                 </section>
+                </div>
             </main>
 
             <footer class="border-t border-gray-200 bg-white/70 px-4 py-6 backdrop-blur-xl dark:border-gray-800 dark:bg-gray-900/70 sm:px-6 lg:px-8">
