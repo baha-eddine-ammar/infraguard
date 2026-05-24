@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\AiPredictionController;
 use App\Http\Controllers\Api\AiInputController;
 use App\Http\Controllers\Api\ClimateReadingController;
 use App\Http\Controllers\Api\PowerReadingController;
+use App\Http\Controllers\Api\PublicTelemetryController;
 use App\Http\Controllers\Api\SensorReadingController;
 use App\Http\Controllers\Api\ServerMetricsController;
 use Illuminate\Support\Facades\Route;
@@ -54,3 +55,14 @@ Route::post('/ai-predictions', [AiPredictionController::class, 'store'])
 Route::get('/ai-input/latest', [AiInputController::class, 'latest'])
     ->middleware('throttle:sensor-readings')
     ->name('api.ai-input.latest');
+
+Route::prefix('public')->middleware('throttle:120,1')->group(function () {
+    Route::get('/climate-latest', [PublicTelemetryController::class, 'climateLatest'])
+        ->name('api.public.climate-latest');
+
+    Route::get('/power-latest', [PublicTelemetryController::class, 'powerLatest'])
+        ->name('api.public.power-latest');
+
+    Route::get('/ai-prediction-latest', [PublicTelemetryController::class, 'aiPredictionLatest'])
+        ->name('api.public.ai-prediction-latest');
+});

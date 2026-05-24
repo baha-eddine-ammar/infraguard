@@ -66,21 +66,27 @@
                 sidebar toggle buttons + dynamic page title
             --}}
             <div class="flex items-center gap-3 min-w-0">
-                <button type="button" class="app-icon-button lg:hidden" @click="$store.sidebar.toggle()" aria-label="Open sidebar">
+                <button type="button" class="app-icon-button lg:hidden" data-sidebar-toggle @click="$store.sidebar.toggle()" aria-label="Open sidebar">
                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7">
                         <path d="M3.5 5.5h13M3.5 10h13M3.5 14.5h13" stroke-linecap="round"></path>
                     </svg>
                 </button>
 
-                <button type="button" class="app-icon-button hidden lg:inline-flex" @click="$store.sidebar.toggle()" aria-label="Toggle sidebar">
+                <button type="button" class="app-icon-button hidden lg:inline-flex" data-sidebar-toggle @click="$store.sidebar.toggle()" aria-label="Toggle sidebar">
                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7">
                         <path d="M3.5 5.5h13M3.5 10h10M3.5 14.5h13" stroke-linecap="round"></path>
                     </svg>
                 </button>
 
-                <div>
-                    <p class="app-section-title">{{ $pageData['eyebrow'] }}</p>
-                    <h1 class="mt-1 font-display text-2xl font-semibold text-gray-900 dark:text-white">{{ $pageData['title'] }}</h1>
+                <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <p class="app-section-title">{{ $pageData['eyebrow'] }}</p>
+                        <span class="pwa-app-mode-badge">
+                            <span class="pwa-live-dot"></span>
+                            App Mode
+                        </span>
+                    </div>
+                    <h1 class="mt-1 truncate font-display text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">{{ $pageData['title'] }}</h1>
                 </div>
             </div>
 
@@ -88,7 +94,15 @@
                 Right side:
                 theme toggle, notifications dropdown, and profile menu
             --}}
-            <div class="ml-auto flex items-center gap-2 sm:gap-3">
+            <div class="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
+                <button
+                    type="button"
+                    class="app-button-secondary hidden min-h-11 px-3 py-2 text-xs sm:px-4"
+                    data-pwa-install-button
+                >
+                    Install App
+                </button>
+
                 <button type="button" class="app-icon-button" @click="$store.theme.toggle()" aria-label="Toggle theme">
                     <svg x-cloak x-show="$store.theme.theme !== 'dark'" class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7">
                         <path d="M17.2 10.8A7.2 7.2 0 119.2 2.8a5.7 5.7 0 008 8z"></path>
@@ -121,7 +135,7 @@
                         x-cloak
                         x-show="notificationOpen"
                         x-transition.origin.top.right
-                        class="app-card absolute right-0 mt-3 w-[22rem] px-4 py-4"
+                        class="app-card absolute right-0 mt-3 w-[calc(100vw-2rem)] max-w-[22rem] px-4 py-4 sm:w-[22rem]"
                         style="display: none;"
                     >
                         <div class="flex items-start justify-between gap-4">

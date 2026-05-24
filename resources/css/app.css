@@ -19,6 +19,7 @@
     body {
         font-family: 'Outfit', sans-serif;
         @apply bg-gray-50 text-gray-800 antialiased transition-colors duration-300;
+        overflow-x: hidden;
     }
 
     body.dark {
@@ -215,11 +216,11 @@
     }
 
     .dashboard-shell {
-        @apply relative;
+        @apply relative min-w-0;
     }
 
     .dashboard-panel {
-        @apply rounded-[32px] border border-slate-200/70 bg-white/80 backdrop-blur-xl transition-colors duration-300 dark:border-white/10 dark:bg-slate-950/70;
+        @apply min-w-0 rounded-[28px] border border-slate-200/70 bg-white/80 backdrop-blur-xl transition-colors duration-300 dark:border-white/10 dark:bg-slate-950/70 sm:rounded-[32px];
         box-shadow:
             0 18px 50px rgba(15, 23, 42, 0.08),
             inset 0 1px 0 rgba(255, 255, 255, 0.72);
@@ -253,7 +254,7 @@
     }
 
     .dashboard-surface-glass {
-        @apply border border-white/70 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04];
+        @apply min-w-0 border border-white/70 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04];
         box-shadow:
             inset 0 1px 0 rgba(255, 255, 255, 0.72),
             0 10px 30px rgba(15, 23, 42, 0.05);
@@ -827,6 +828,259 @@
     .apexcharts-tooltip.apexcharts-theme-light {
         @apply !rounded-xl !border !border-gray-200 !bg-white !text-gray-700 shadow-sm dark:!border-gray-800 dark:!bg-gray-900 dark:!text-gray-200;
     }
+
+    .public-live-card {
+        @apply relative min-w-0 overflow-hidden rounded-[28px] border px-5 py-6 shadow-sm backdrop-blur-xl transition-colors duration-300 sm:px-6;
+        box-shadow:
+            0 18px 44px rgba(15, 23, 42, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.74);
+    }
+
+    .public-live-card--temperature {
+        border-color: rgba(125, 211, 252, 0.52);
+        background:
+            radial-gradient(circle at top right, rgba(56, 189, 248, 0.18), transparent 34%),
+            linear-gradient(135deg, rgba(240, 249, 255, 0.96), rgba(255, 255, 255, 0.88));
+    }
+
+    .public-live-card--humidity {
+        border-color: rgba(196, 181, 253, 0.52);
+        background:
+            radial-gradient(circle at top right, rgba(139, 92, 246, 0.16), transparent 34%),
+            linear-gradient(135deg, rgba(245, 243, 255, 0.96), rgba(255, 255, 255, 0.88));
+    }
+
+    .public-live-card--airflow {
+        border-color: rgba(110, 231, 183, 0.48);
+        background:
+            radial-gradient(circle at top right, rgba(45, 212, 191, 0.14), transparent 34%),
+            linear-gradient(135deg, rgba(236, 253, 245, 0.94), rgba(255, 255, 255, 0.88));
+    }
+
+    .public-live-card--power {
+        border-color: rgba(252, 211, 77, 0.54);
+        background:
+            radial-gradient(circle at top right, rgba(245, 158, 11, 0.18), transparent 34%),
+            linear-gradient(135deg, rgba(255, 251, 235, 0.96), rgba(255, 255, 255, 0.88));
+    }
+
+    .public-live-card__header {
+        @apply flex items-start justify-between gap-4;
+    }
+
+    .public-live-card__eyebrow {
+        @apply text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500;
+    }
+
+    .public-live-card__title {
+        @apply mt-2 font-display text-xl font-semibold tracking-tight text-slate-950 dark:text-white;
+    }
+
+    .public-live-value {
+        @apply mt-8 break-words font-display text-4xl font-semibold tracking-[-0.05em] text-slate-950 dark:text-white sm:text-5xl;
+    }
+
+    .public-live-meta {
+        @apply mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400;
+    }
+
+    .public-live-status {
+        @apply inline-flex min-h-8 items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em];
+    }
+
+    .public-live-status--loading {
+        @apply bg-slate-100 text-slate-500 dark:bg-white/10 dark:text-slate-300;
+    }
+
+    .public-live-status--stable {
+        @apply bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300;
+    }
+
+    .public-live-status--warning {
+        @apply bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300;
+    }
+
+    .public-live-status--critical,
+    .public-live-status--offline {
+        @apply bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300;
+    }
+
+    .public-live-status--awaiting {
+        @apply bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300;
+    }
+
+    .public-live-ai-card,
+    .ai-prediction-panel {
+        @apply min-w-0 overflow-hidden rounded-[28px] border px-5 py-6 shadow-sm backdrop-blur-xl transition-colors duration-300 sm:px-6;
+        box-shadow:
+            0 18px 48px rgba(15, 23, 42, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.76);
+    }
+
+    .public-live-ai-card,
+    .public-live-ai-card[data-risk-level="normal"],
+    .ai-prediction-panel--normal {
+        border-color: rgba(103, 232, 249, 0.48);
+        background:
+            radial-gradient(circle at top right, rgba(45, 212, 191, 0.16), transparent 34%),
+            linear-gradient(135deg, rgba(236, 253, 245, 0.96), rgba(240, 249, 255, 0.88));
+    }
+
+    .public-live-ai-card[data-risk-level="warning"],
+    .ai-prediction-panel--warning {
+        border-color: rgba(251, 191, 36, 0.54);
+        background:
+            radial-gradient(circle at top right, rgba(245, 158, 11, 0.18), transparent 34%),
+            linear-gradient(135deg, rgba(255, 251, 235, 0.96), rgba(255, 255, 255, 0.9));
+    }
+
+    .public-live-ai-card[data-risk-level="critical"],
+    .ai-prediction-panel--critical {
+        border-color: rgba(251, 113, 133, 0.5);
+        background:
+            radial-gradient(circle at top right, rgba(244, 63, 94, 0.18), transparent 34%),
+            linear-gradient(135deg, rgba(255, 241, 242, 0.96), rgba(255, 255, 255, 0.9));
+    }
+
+    .public-live-ai-tile,
+    .ai-prediction-tile,
+    .ai-prediction-detail {
+        @apply rounded-2xl border border-white/70 bg-white/70 p-4 dark:border-white/10 dark:bg-white/[0.05];
+    }
+
+    .public-live-ai-tile p,
+    .ai-prediction-tile p {
+        @apply text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500;
+    }
+
+    .public-live-ai-tile strong,
+    .ai-prediction-tile strong {
+        @apply mt-2 block font-display text-2xl font-semibold tracking-[-0.05em] text-slate-950 dark:text-white sm:text-3xl;
+    }
+
+    .public-live-ai-value {
+        @apply mt-2 text-lg font-semibold text-slate-950 dark:text-white;
+    }
+
+    .pwa-app-mode-badge {
+        @apply hidden items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-600 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300;
+    }
+
+    .pwa-live-dot {
+        @apply inline-flex h-2 w-2 rounded-full bg-emerald-500;
+        box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.12);
+        animation: pwa-live-pulse 1.8s ease-out infinite;
+    }
+
+    .pwa-bottom-nav {
+        display: none;
+    }
+
+    .pwa-bottom-nav__inner {
+        @apply mx-auto grid max-w-md gap-1 rounded-[28px] border border-white/70 bg-white/95 p-2 shadow-2xl shadow-slate-950/10 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/95 dark:shadow-black/40;
+    }
+
+    .pwa-bottom-nav__item {
+        @apply flex min-h-14 flex-col items-center justify-center gap-1 rounded-[20px] px-2 py-2 text-[11px] font-semibold text-slate-500 transition dark:text-slate-400;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .pwa-bottom-nav__item svg {
+        @apply h-5 w-5;
+    }
+
+    .pwa-bottom-nav__item.is-active {
+        @apply bg-brand-500 text-white shadow-lg shadow-brand-500/25;
+    }
+
+    .pwa-bottom-nav__item:not(.is-active):active {
+        @apply bg-slate-100 text-slate-800 dark:bg-white/10 dark:text-white;
+    }
+
+    .pwa-standalone .pwa-app-mode-badge {
+        @apply inline-flex;
+    }
+
+    .pwa-standalone [data-pwa-install-button] {
+        display: none !important;
+    }
+
+    .pwa-standalone .app-topbar {
+        box-shadow: 0 10px 32px rgba(15, 23, 42, 0.06);
+    }
+
+    .pwa-standalone .app-icon-button,
+    .pwa-standalone .menu-item,
+    .pwa-standalone button,
+    .pwa-standalone a {
+        touch-action: manipulation;
+    }
+
+    .pwa-standalone .bg-rose-500 {
+        animation: pwa-critical-pulse 1.45s ease-in-out infinite;
+    }
+}
+
+@media (display-mode: standalone), (display-mode: fullscreen) {
+    .pwa-app-mode-badge {
+        display: inline-flex;
+    }
+}
+
+@media (max-width: 767px) {
+    .pwa-standalone {
+        background: #f8fbff;
+    }
+
+    .pwa-standalone header {
+        padding-top: max(0.75rem, env(safe-area-inset-top));
+    }
+
+    .pwa-standalone .app-topbar {
+        border-radius: 1.5rem;
+        padding: 0.85rem 1rem;
+    }
+
+    .pwa-standalone [data-sidebar-toggle] {
+        display: none !important;
+    }
+
+    .pwa-standalone .app-main-content {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+        padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
+    }
+
+    .pwa-standalone .pwa-bottom-nav {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 60;
+        display: block;
+        padding: 0.65rem 0.85rem max(0.8rem, env(safe-area-inset-bottom));
+        pointer-events: none;
+    }
+
+    .pwa-standalone .pwa-bottom-nav__inner,
+    .pwa-standalone .pwa-bottom-nav__item {
+        pointer-events: auto;
+    }
+
+    .pwa-standalone .dashboard-shell {
+        padding-bottom: 0.5rem;
+    }
+
+    .pwa-standalone .dashboard-panel,
+    .pwa-standalone .dashboard-surface-glass {
+        border-radius: 1.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .pwa-standalone .pwa-bottom-nav {
+        display: none !important;
+    }
 }
 
 @keyframes dashboard-live-pulse {
@@ -860,6 +1114,34 @@
     100% {
         transform: scale(1.45);
         opacity: 0;
+    }
+}
+
+@keyframes pwa-live-pulse {
+    0% {
+        transform: scale(0.92);
+        opacity: 0.82;
+    }
+
+    50% {
+        transform: scale(1.06);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.92);
+        opacity: 0.82;
+    }
+}
+
+@keyframes pwa-critical-pulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.28);
+    }
+
+    50% {
+        box-shadow: 0 0 0 7px rgba(244, 63, 94, 0);
     }
 }
 
@@ -941,6 +1223,8 @@
     .dashboard-panel-hover,
     .dashboard-live-dot,
     .dashboard-live-dot::after,
+    .pwa-live-dot,
+    .pwa-standalone .bg-rose-500,
     .dashboard-mini-stat,
     .calendar-stat-card,
     .calendar-event-card,

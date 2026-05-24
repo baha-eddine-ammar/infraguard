@@ -74,7 +74,7 @@
         empty: {{ json_encode((bool) $empty) }},
     })"
     data-react-fallback
-    class="dashboard-panel dashboard-panel-hover group relative overflow-hidden px-6 py-6 sm:px-7"
+    class="dashboard-panel dashboard-panel-hover group relative min-w-0 overflow-hidden px-5 py-5 sm:px-7 sm:py-6"
     :class="{ 'scale-[1.01] shadow-[0_28px_90px_rgba(70,95,255,0.12)]': refreshPulse }"
 >
     <div class="absolute inset-0 transition-opacity duration-500" :style="glowStyle()"></div>
@@ -86,7 +86,7 @@
             Left = metric icon
             Right = current status badge
         --}}
-        <div class="flex items-start justify-between gap-4">
+        <div class="flex flex-wrap items-start justify-between gap-4">
             <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/80 text-slate-700 shadow-lg shadow-slate-200/60 backdrop-blur dark:bg-white/10 dark:text-white dark:shadow-none">
                 @if ($icon === 'temperature')
                     <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
@@ -110,7 +110,7 @@
                 @endif
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex min-w-0 items-center gap-2">
                 <span class="dashboard-live-badge" :class="statusClasses()">
                     <span class="dashboard-live-dot" x-show="!empty"></span>
                     <span x-text="status"></span>
@@ -124,18 +124,18 @@
         --}}
         <div class="mt-6">
             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">{{ $subtitle }}</p>
-            <div class="mt-2 flex items-start justify-between gap-4">
-                <div>
-                    <h2 class="font-display text-[1.9rem] font-semibold tracking-[-0.04em] text-slate-950 dark:text-white">{{ $title }}</h2>
+            <div class="mt-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div class="min-w-0">
+                    <h2 class="break-words font-display text-[1.65rem] font-semibold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-[1.9rem]">{{ $title }}</h2>
                     <div class="mt-4 flex items-end gap-2">
-                        <p class="font-display text-5xl font-semibold leading-none text-slate-950 dark:text-white">
+                        <p class="font-display text-4xl font-semibold leading-none text-slate-950 dark:text-white sm:text-5xl">
                             <span class="tabular-nums" x-text="displayValue()"></span>
                         </p>
                         <span x-show="!empty" class="pb-1 text-lg font-medium text-slate-400 dark:text-slate-500">{{ $unit }}</span>
                     </div>
                 </div>
 
-                <div class="text-right">
+                <div class="text-left sm:text-right">
                     <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">Current load</p>
                     <p class="mt-2 font-display text-2xl font-semibold text-slate-950 dark:text-white" x-text="displayPercent()"></p>
                 </div>
@@ -147,7 +147,7 @@
             Shows trend direction and the mini sparkline chart.
         --}}
         <div class="dashboard-surface-glass mt-6 rounded-[24px] p-4">
-            <div class="flex items-center justify-between gap-4">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">Trend delta</p>
                     <div class="mt-2 flex items-center gap-2" :class="trendClasses()">
@@ -160,7 +160,7 @@
                     </div>
                 </div>
 
-                <div class="min-w-[7rem] text-right">
+                <div class="min-w-0 text-left sm:min-w-[7rem] sm:text-right">
                     <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500" x-text="empty ? 'Awaiting sensor' : 'Live trace'"></p>
                     <div x-show="!empty" x-ref="sparkline" class="mt-2 h-[88px]"></div>
                     <div x-show="empty" class="mt-2 flex h-[88px] items-center justify-end text-sm font-semibold text-slate-300 dark:text-slate-600">--</div>
@@ -180,7 +180,7 @@
             <div class="metric-progress-track h-2.5 bg-slate-100/80 dark:bg-white/[0.06]">
                 <div class="h-full rounded-full transition-all duration-500" :style="progressStyle()"></div>
             </div>
-            <div class="mt-3 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">
+            <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">
                 <span x-text="empty ? 'Awaiting real sensor feed' : 'Auto-refreshing feed'"></span>
                 <span x-text="status"></span>
             </div>
