@@ -24,7 +24,7 @@
 | 5. app/Models/*
 | 6. resources/views/*
 |
-| HOW TO UNDERSTAND THIS FEATURE:
+| HOW TO UNDERSTAND THIS FEATURE:       
 | 1. Start here and find the route name/path.
 | 2. Open the controller or method used by that route.
 | 3. Check whether a FormRequest validates the input.
@@ -149,6 +149,7 @@ Route::middleware(['auth', 'approved.user', 'verified'])->group(function () {
     Route::post('/problems/{problem}/solutions', [SolutionController::class, 'store'])->name('problems.solutions.store');
 
     Route::get('/servers', [ServerController::class, 'index'])->name('servers.index');
+    Route::get('/servers/live-state', [ServerController::class, 'liveState'])->name('servers.live-state');
     Route::get('/servers/{server}/feed', [ServerController::class, 'feed'])->whereNumber('server')->name('servers.feed');
     Route::get('/servers/{server}', [ServerController::class, 'show'])->whereNumber('server')->name('servers.show');
 
@@ -165,6 +166,8 @@ Route::middleware(['auth', 'approved.user', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified', 'department.head'])->group(function () {
     Route::get('/servers/create', [ServerController::class, 'create'])->name('servers.create');
     Route::post('/servers', [ServerController::class, 'store'])->name('servers.store');
+    Route::post('/servers/pc-metrics-token', [ServerController::class, 'updatePcMetricsToken'])
+        ->name('servers.pc-metrics-token.update');
 
     Route::get('/maintenance/create', [MaintenanceTaskController::class, 'create'])->name('maintenance.create');
     Route::post('/maintenance', [MaintenanceTaskController::class, 'store'])->name('maintenance.store');

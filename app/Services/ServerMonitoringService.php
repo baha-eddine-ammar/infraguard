@@ -21,7 +21,7 @@ class ServerMonitoringService
             ? $server->latestMetric
             : $server->latestMetric()->first();
 
-        $lastSeenAt = $server->last_seen_at ?? $latestMetric?->created_at;
+        $lastSeenAt = $latestMetric?->created_at ?? $server->last_seen_at;
 
         if (! $latestMetric || ! $lastSeenAt) {
             return [

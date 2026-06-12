@@ -66,6 +66,10 @@ return [
         'department_head_key' => env('DEPARTMENT_HEAD_REGISTRATION_KEY'),
     ],
 
+    'pc_metrics' => [
+        'token' => env('PC_METRICS_TOKEN'),
+    ],
+
     // Telegram bot configuration used for account linking and notifications.
     'telegram' => [
         'bot_token' => env('TELEGRAM_BOT_TOKEN'),

@@ -3,24 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Server;
+use App\Services\DefaultPcServerService;
 use App\Services\ServerMetricsIngestionService;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class ServerMetricsController extends Controller
 {
     public function __construct(
         private readonly ServerMetricsIngestionService $ingestionService,
+        private readonly DefaultPcServerService $defaultPcServerService,
     ) {
     }
 
     public function store(Request $request): JsonResponse
     {
         $request->merge([
-            'identifier' => Str::lower(trim((string) $request->input('identifier', ''))),
+            'identifier' => $this->defaultPcServerService->normalizeIdentifier($request->input('identifier')),
+            'net_rx_mbps' => $request->input('net_rx_mbps', $request->input('network_rx')),
+            'net_tx_mbps' => $request->input('net_tx_mbps', $request->input('network_tx')),
         ]);
 
         $validated = $request->validate([
@@ -43,21 +44,17 @@ class ServerMetricsController extends Controller
             'sampled_at' => ['nullable', 'date'],
         ]);
 
-        $server = Server::query()
-            ->where('identifier', $validated['identifier'])
-            ->first();
+        $server = $this->defaultPcServerService->resolveForIdentifier($validated['identifier']);
 
         $providedToken = (string) $request->header('X-Server-Token', '');
 
-        if (! $server || $providedToken === '' || ! hash_equals($server->api_token, $providedToken)) {
+        if (! $server || ! $this->defaultPcServerService->credentialsMatch($server, $providedToken)) {
             return response()->json([
                 'message' => 'Invalid server credentials.',
             ], 401);
         }
 
-        $capturedAt = isset($validated['sampled_at'])
-            ? Carbon::parse($validated['sampled_at'])
-            : now();
+        $capturedAt = now();
 
         $result = $this->ingestionService->ingest($server, $validated, $capturedAt);
         $metric = $result['metric'];

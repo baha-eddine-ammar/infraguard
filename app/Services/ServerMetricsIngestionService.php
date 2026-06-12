@@ -45,11 +45,9 @@ class ServerMetricsIngestionService
                 'created_at' => $capturedAt,
             ]);
 
-            if ($server->last_seen_at === null || $capturedAt->greaterThan($server->last_seen_at)) {
-                $server->forceFill([
-                    'last_seen_at' => $capturedAt,
-                ])->save();
-            }
+            $server->forceFill([
+                'last_seen_at' => $capturedAt,
+            ])->save();
 
             return $metric;
         });
@@ -63,7 +61,7 @@ class ServerMetricsIngestionService
             'ram_used_mb' => (int) $metric->ram_used_mb,
             'disk_used_gb' => (float) $metric->disk_used_gb,
             'temperature_c' => $metric->temperature_c,
-            'sampled_at' => $capturedAt->toIso8601String(),
+            'received_at' => $capturedAt->toIso8601String(),
         ]);
 
         ServerMetricStored::dispatch($freshServer->id, $metric->id, $serverCard);

@@ -43,12 +43,6 @@
                     Review the current server health snapshot, connection details, and recent telemetry history.
                 </p>
             </div>
-
-            @if (auth()->user()->isDepartmentHead())
-                <a href="{{ route('servers.create') }}" class="app-button-secondary">
-                    Add Another Server
-                </a>
-            @endif
         </div>
 
         @if (session('success'))

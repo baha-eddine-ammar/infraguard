@@ -39,6 +39,6 @@ class Server extends Model
 
     public function latestMetric(): HasOne
     {
-        return $this->hasOne(ServerMetric::class)->latestOfMany('created_at');
+        return $this->hasOne(ServerMetric::class)->latestOfMany('id');
     }
 }

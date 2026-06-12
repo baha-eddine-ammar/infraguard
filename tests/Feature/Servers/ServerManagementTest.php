@@ -4,6 +4,7 @@ namespace Tests\Feature\Servers;
 
 use App\Models\Server;
 use App\Models\User;
+use App\Services\PcMetricsTokenService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -51,20 +52,82 @@ class ServerManagementTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_verified_user_sees_an_empty_server_section_until_a_server_is_registered(): void
+    public function test_department_head_can_save_pc_metrics_token_from_server_section(): void
     {
+        config()->set('services.pc_metrics.token', null);
+
+        $admin = User::factory()->departmentHead()->create();
+        $token = 'database-token-1234567890';
+
+        $response = $this->actingAs($admin)
+            ->from(route('servers.index'))
+            ->post(route('servers.pc-metrics-token.update'), [
+                'pc_metrics_token' => $token,
+            ]);
+
+        $response
+            ->assertRedirect(route('servers.index'))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas('pc_metrics_tokens', [
+            'name' => 'local-pc',
+            'token_prefix' => 'data',
+            'token_suffix' => '7890',
+        ]);
+
+        $this->assertDatabaseMissing('pc_metrics_tokens', [
+            'token_hash' => $token,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('servers.index'))
+            ->assertOk()
+            ->assertSeeText('data********7890')
+            ->assertDontSeeText($token);
+
+        $this->assertTrue(app(PcMetricsTokenService::class)->matches($token));
+    }
+
+    public function test_staff_cannot_update_pc_metrics_token(): void
+    {
+        $staff = User::factory()->create();
+
+        $this->actingAs($staff)
+            ->post(route('servers.pc-metrics-token.update'), [
+                'pc_metrics_token' => 'database-token-1234567890',
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('pc_metrics_tokens', 0);
+    }
+
+    public function test_server_section_auto_creates_the_default_local_pc_card(): void
+    {
+        config()->set('services.pc_metrics.token', 'pc-test-token');
+
         $user = User::factory()->create();
 
         $this->actingAs($user)
             ->get(route('servers.index'))
             ->assertOk()
             ->assertSeeText('Server section')
-            ->assertSeeText('Monitoring servers')
-            ->assertDontSeeText('LOCAL-WORKSTATION')
-            ->assertDontSeeText('No servers registered yet');
+            ->assertSeeText('Local PC monitoring')
+            ->assertSeeText('Local PC')
+            ->assertSeeText('CPU usage')
+            ->assertSeeText('RAM usage')
+            ->assertSeeText('Disk usage')
+            ->assertSeeText('Network status')
+            ->assertDontSeeText('Add Server');
+
+        $this->assertDatabaseHas('servers', [
+            'name' => 'Local PC',
+            'identifier' => 'local-pc',
+            'server_type' => 'Local PC',
+            'api_token' => 'pc-test-token',
+        ]);
     }
 
-    public function test_registered_server_appears_in_the_server_section_and_exposes_a_live_feed(): void
+    public function test_registered_server_still_exposes_its_dedicated_live_feed(): void
     {
         $user = User::factory()->create();
 
@@ -100,7 +163,12 @@ class ServerManagementTest extends TestCase
         $this->actingAs($user)
             ->get(route('servers.index'))
             ->assertOk()
-            ->assertSeeText('SRV-DB-01')
+            ->assertSeeText('Local PC')
+            ->assertSeeText('CPU usage')
+            ->assertSeeText('RAM usage')
+            ->assertSeeText('Disk usage')
+            ->assertSeeText('Network status')
+            ->assertDontSeeText('SRV-DB-01')
             ->assertDontSeeText('LOCAL-WORKSTATION');
 
         $feed = $this->actingAs($user)->getJson(route('servers.feed', $server));
@@ -110,6 +178,83 @@ class ServerManagementTest extends TestCase
             ->assertJsonPath('identifier', 'srv-db-01')
             ->assertJsonPath('status', 'Live')
             ->assertJsonCount(6, 'metrics');
+    }
+
+    public function test_server_section_live_state_endpoint_returns_one_focused_card_payload(): void
+    {
+        config()->set('services.pc_metrics.token', 'pc-test-token');
+
+        $user = User::factory()->create();
+
+        $server = Server::query()->create([
+            'name' => 'Old Local Name',
+            'identifier' => 'local-pc',
+            'api_token' => 'old-token',
+            'last_seen_at' => now(),
+        ]);
+
+        $server->metrics()->create([
+            'cpu_percent' => 12.3,
+            'ram_used_mb' => 2048,
+            'ram_total_mb' => 16384,
+            'disk_used_gb' => 120,
+            'disk_total_gb' => 1000,
+            'network_connected' => true,
+            'network_name' => 'Older row',
+            'net_rx_mbps' => 1.1,
+            'net_tx_mbps' => 0.5,
+            'created_at' => now()->addMinute(),
+        ]);
+
+        $server->metrics()->create([
+            'cpu_percent' => 64.5,
+            'ram_used_mb' => 8192,
+            'ram_total_mb' => 16384,
+            'disk_used_gb' => 420,
+            'disk_total_gb' => 1000,
+            'storage_free_gb' => 580,
+            'storage_total_gb' => 1000,
+            'temperature_c' => 49.2,
+            'network_connected' => true,
+            'network_name' => 'Ethernet',
+            'network_speed_mbps' => 1000,
+            'network_ipv4' => '10.10.10.21',
+            'net_rx_mbps' => 9.4,
+            'net_tx_mbps' => 2.1,
+            'created_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)->getJson(route('servers.live-state'));
+
+        $response
+            ->assertOk()
+            ->assertHeader('Pragma', 'no-cache')
+            ->assertJsonPath('server.name', 'Local PC')
+            ->assertJsonPath('server.identifier', 'local-pc')
+            ->assertJsonPath('server.status', 'Live')
+            ->assertJsonPath('server.latestMetric.cpu.raw', 64.5)
+            ->assertJsonPath('server.latestMetric.network.rxMbps', 9.4)
+            ->assertJsonPath('server.latestMetric.network.txMbps', 2.1)
+            ->assertJsonCount(4, 'server.metrics');
+
+        $this->assertSame(
+            ['cpu', 'ram', 'disk', 'network'],
+            collect($response->json('server.metrics'))->pluck('key')->all()
+        );
+
+        $cacheControl = $response->headers->get('Cache-Control');
+        $this->assertStringContainsString('no-store', $cacheControl);
+        $this->assertStringContainsString('no-cache', $cacheControl);
+        $this->assertStringContainsString('must-revalidate', $cacheControl);
+
+        $this->assertArrayNotHasKey('temperature', $response->json('server.latestMetric'));
+        $this->assertArrayNotHasKey('storage', $response->json('server.latestMetric'));
+
+        $this->assertDatabaseHas('servers', [
+            'id' => $server->id,
+            'name' => 'Local PC',
+            'api_token' => 'pc-test-token',
+        ]);
     }
 
     public function test_server_identifier_is_normalized_before_validation_and_storage(): void
