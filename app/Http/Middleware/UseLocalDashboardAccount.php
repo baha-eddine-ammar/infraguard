@@ -26,7 +26,7 @@ class UseLocalDashboardAccount
         if ($guard->guest()) {
             $user = User::query()->where('email', $email)->first();
 
-            if (! $user?->isStaff() || ! $user->hasApprovedStatus() || ! $user->hasVerifiedEmail()) {
+            if (! ($user?->isStaff() || $user?->isDepartmentHead()) || ! $user->hasApprovedStatus() || ! $user->hasVerifiedEmail()) {
                 return $next($request);
             }
 

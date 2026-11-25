@@ -31,6 +31,22 @@ class LocalDashboardTest extends TestCase
         $this->get('http://127.0.0.1/admin')->assertForbidden();
     }
 
+    public function test_local_visitors_can_open_the_dashboard_as_department_head(): void
+    {
+        $this->app->instance('env', 'local');
+        $user = User::factory()->departmentHead()->create();
+        config(['app.local_dashboard_user_email' => $user->email]);
+
+        $this->get('http://127.0.0.1/')
+            ->assertRedirect('/dashboard');
+
+        $this->get('http://127.0.0.1/dashboard')
+            ->assertOk()
+            ->assertSeeText('Server section');
+
+        $this->get('http://127.0.0.1/admin')->assertOk();
+    }
+
     public function test_an_opted_in_account_is_ignored_outside_the_local_environment(): void
     {
         $user = User::factory()->create();
