@@ -62,10 +62,9 @@ class DepartmentHeadInviteTest extends TestCase
         $revealResponse->assertOk();
         $revealResponse->assertSee('Authorization code revealed');
 
-        preg_match('/[A-Z0-9]{10}/', $revealResponse->getContent(), $matches);
-        $authorizationCode = $matches[0] ?? null;
-
-        $this->assertNotNull($authorizationCode);
+        $authorizationCode = $revealResponse->viewData('authorizationCode');
+        $this->assertMatchesRegularExpression('/\A[A-Z0-9]{10}\z/', $authorizationCode);
+        $revealResponse->assertSeeText($authorizationCode);
 
         $this->get($this->relativePath($revealUrl))
             ->assertSee('This code has already been revealed.');
@@ -128,8 +127,7 @@ class DepartmentHeadInviteTest extends TestCase
         $invite = DepartmentHeadInvite::query()->firstOrFail();
         $revealUrl = $this->captureRevealUrl();
         $revealResponse = $this->get($this->relativePath($revealUrl));
-        preg_match('/[A-Z0-9]{10}/', $revealResponse->getContent(), $matches);
-        $authorizationCode = $matches[0] ?? null;
+        $authorizationCode = $revealResponse->viewData('authorizationCode');
 
         $this->post(route('department-head.invites.store', $invite), [
             'email' => 'other@example.com',

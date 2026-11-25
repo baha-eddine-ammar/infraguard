@@ -22,7 +22,7 @@ jobs:
 
             echo "📦 Updating repository..."
             if [ ! -d ".git" ]; then
-              git clone https://github.com/baha-eddine-ammar/pfe_test1.git .
+              git clone https://github.com/baha-eddine-ammar/infraguard.git .
             else
               git reset --hard
               git clean -fd

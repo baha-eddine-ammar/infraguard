@@ -28,6 +28,8 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    'local_dashboard_user_email' => env('LOCAL_DASHBOARD_USER_EMAIL'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

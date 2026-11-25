@@ -22,6 +22,8 @@
 use App\Http\Middleware\EnsureDepartmentHead;
 use App\Http\Middleware\EnsureApprovedUser;
 use App\Http\Middleware\EnsurePendingTwoFactorChallenge;
+use App\Http\Middleware\UseLocalDashboardAccount;
+use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -36,6 +38,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [UseLocalDashboardAccount::class]);
+        $middleware->prependToPriorityList(AuthenticatesRequests::class, UseLocalDashboardAccount::class);
+
         // Custom middleware alias used in routes/web.php to protect
         // department-head-only sections.
         $middleware->alias([

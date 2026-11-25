@@ -1,6 +1,6 @@
-# Server Room Supervision
+# InfraGuard
 
-Production-ready Laravel application for supervising server room telemetry, environmental sensors, maintenance workflows, reports, notifications, and user administration.
+InfraGuard is a Laravel application for monitoring server rooms and coordinating maintenance. It brings live server and environmental telemetry, alerts, maintenance workflows, and AI-assisted reporting into a single dashboard.
 
 ## Stack
 
