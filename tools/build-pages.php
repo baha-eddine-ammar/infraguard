@@ -16,6 +16,7 @@ if (! File::exists($destination.'/build/manifest.json')) {
 }
 
 File::copy(public_path('favicon.ico'), $destination.'/favicon.ico');
+File::put($destination.'/.nojekyll', '');
 $app->usePublicPath($destination);
 Vite::createAssetPathsUsing(static fn (string $path): string => './'.$path);
 
