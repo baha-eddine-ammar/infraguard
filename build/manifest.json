@@ -1,0 +1,77 @@
+{
+  "__commonjsHelpers-CqkleIqs.js": {
+    "file": "assets/_commonjsHelpers-CqkleIqs.js",
+    "name": "_commonjsHelpers"
+  },
+  "node_modules/apexcharts/dist/apexcharts.esm.js": {
+    "file": "assets/apexcharts.esm-09A9eAcr.js",
+    "name": "apexcharts.esm",
+    "src": "node_modules/apexcharts/dist/apexcharts.esm.js",
+    "isDynamicEntry": true
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-Cbh5U7wS.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-BW9inGXm.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-CqkleIqs.js"
+    ],
+    "dynamicImports": [
+      "resources/js/server-3d.js",
+      "resources/js/server-rack-landing.js",
+      "node_modules/apexcharts/dist/apexcharts.esm.js",
+      "resources/js/calendar-workspace.js",
+      "resources/js/chat-workspace.js",
+      "resources/js/brand-preloader.js"
+    ]
+  },
+  "resources/js/brand-preloader.js": {
+    "file": "assets/brand-preloader-D5YPCcjB.js",
+    "name": "brand-preloader",
+    "src": "resources/js/brand-preloader.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/calendar-workspace.js": {
+    "file": "assets/calendar-workspace-BrxvxXCw.js",
+    "name": "calendar-workspace",
+    "src": "resources/js/calendar-workspace.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/chat-workspace.js": {
+    "file": "assets/chat-workspace-RvMYP4AE.js",
+    "name": "chat-workspace",
+    "src": "resources/js/chat-workspace.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/monitoring-widgets.jsx": {
+    "file": "assets/monitoring-widgets-B9n7y7Vl.js",
+    "name": "monitoring-widgets",
+    "src": "resources/js/monitoring-widgets.jsx",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-CqkleIqs.js"
+    ]
+  },
+  "resources/js/server-3d.js": {
+    "file": "assets/server-3d-xgc66Jwm.js",
+    "name": "server-3d",
+    "src": "resources/js/server-3d.js",
+    "isDynamicEntry": true
+  },
+  "resources/js/server-rack-landing.js": {
+    "file": "assets/server-rack-landing-Csl3jVEF.js",
+    "name": "server-rack-landing",
+    "src": "resources/js/server-rack-landing.js",
+    "isDynamicEntry": true
+  }
+}
