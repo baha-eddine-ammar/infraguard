@@ -23,7 +23,7 @@
     };
 @endphp
 
-<section class="ai-prediction-panel {{ $riskTone['panel'] }} ring-1 {{ $riskTone['ring'] }}">
+<section id="ai-health" class="ai-prediction-panel {{ $riskTone['panel'] }} ring-1 {{ $riskTone['ring'] }}">
     <div class="grid gap-6 p-5 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.4fr)] lg:p-6">
         <div class="min-w-0">
             <div class="flex flex-wrap items-center justify-between gap-3">
@@ -41,7 +41,9 @@
             </div>
 
             <p class="mt-4 text-sm leading-7 text-slate-500 dark:text-slate-400">
-                Laravel stores and displays predictions received from n8n. The Python Isolation Forest model runs outside the production hosting environment.
+                {{ ($pagesPreview ?? false)
+                    ? 'An example of how InfraGuard displays equipment risk and suggested maintenance actions.'
+                    : 'Laravel stores and displays predictions received from n8n. The Python Isolation Forest model runs outside the production hosting environment.' }}
             </p>
 
             <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -104,7 +106,7 @@
                 </div>
 
                 <p class="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
-                    Last AI update {{ $latestAiPrediction->created_at?->diffForHumans() }}
+                    {{ ($pagesPreview ?? false) ? 'Sample assessment' : 'Last AI update '.$latestAiPrediction->created_at?->diffForHumans() }}
                 </p>
             @else
                 <div class="flex h-full min-h-[220px] flex-col justify-center text-center">

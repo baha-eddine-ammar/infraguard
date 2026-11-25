@@ -2,6 +2,8 @@
 
 InfraGuard is a Laravel application for monitoring server rooms and coordinating maintenance. It brings live server and environmental telemetry, alerts, maintenance workflows, and AI-assisted reporting into a single dashboard.
 
+[Open the GitHub Pages dashboard demo](https://baha-eddine-ammar.github.io/infraguard/). The demo uses sample readings and an example risk assessment.
+
 ## Stack
 
 - Laravel 12, PHP 8.2+

@@ -27,6 +27,9 @@
 | 4. Inline Alpine/ApexCharts code keeps the page feeling live.
 --}}
 @php
+    $pagesPreview = $pagesPreview ?? false;
+    $telemetryFeedUrl = $pagesPreview ? null : route('dashboard.telemetry');
+
     // Helper closure used only inside this Blade file.
     // It computes the latest trend direction/percentage from a list of chart values.
     $buildTrendMeta = function (array $values): array {
@@ -58,7 +61,7 @@
         : false;
     $powerValue = $latestPowerReading['power_w'] ?? null;
     $powerStatus = $latestPowerReading
-        ? ($powerIsStale ? 'Stale' : 'Live')
+        ? ($pagesPreview ? 'Sample' : ($powerIsStale ? 'Stale' : 'Live'))
         : 'Awaiting Sensor';
     $powerProgress = $powerValue !== null
         ? max(0, min(100, ((float) $powerValue / 2500) * 100))
@@ -77,7 +80,7 @@
             'status' => $temperatureData['status'],
             'ringDegrees' => $temperatureData['ringDegrees'],
             'unit' => 'deg C',
-            'feedUrl' => route('dashboard.temperature'),
+            'feedUrl' => $pagesPreview ? null : route('dashboard.temperature'),
             'stableColor' => '#38BDF8',
             'icon' => 'temperature',
             'target' => 'Target band 18-25 deg C',
@@ -91,7 +94,7 @@
             'status' => $humidityData['status'],
             'ringDegrees' => $humidityData['ringDegrees'],
             'unit' => '%',
-            'feedUrl' => route('dashboard.humidity'),
+            'feedUrl' => $pagesPreview ? null : route('dashboard.humidity'),
             'stableColor' => '#8B5CF6',
             'icon' => 'humidity',
             'target' => 'Target band 35-60%',
@@ -120,7 +123,7 @@
             'status' => $powerStatus,
             'ringDegrees' => round(($powerProgress / 100) * 360),
             'unit' => 'W',
-            'feedUrl' => route('dashboard.telemetry'),
+            'feedUrl' => $telemetryFeedUrl,
             'stableColor' => '#F59E0B',
             'icon' => 'power',
             'target' => $powerTarget,
@@ -179,11 +182,11 @@
 
     $reactDashboardChartProps = [
         'trend' => $trendData,
-        'feedUrl' => route('dashboard.telemetry'),
+        'feedUrl' => $telemetryFeedUrl,
     ];
 @endphp
 
-<x-app-layout>
+<x-dynamic-component :component="$pagesPreview ? 'pages-dashboard-layout' : 'app-layout'">
     {{--
         Root dashboard Alpine component.
         It receives chart series and feed URLs from the backend.
@@ -192,7 +195,7 @@
         x-data="serverRoomDashboard(@js([
             'trend' => $trendData,
             'sensorStates' => $statusCounts,
-            'feedUrl' => route('dashboard.telemetry'),
+            'feedUrl' => $telemetryFeedUrl,
         ]))"
         x-init="init()"
         data-dashboard-page
@@ -205,19 +208,23 @@
             Dashboard header:
             Introduces the page.
         --}}
-        <section>
+        <section id="overview">
             <div>
-                <p class="app-section-title">Realtime monitoring</p>
+                <p class="app-section-title">{{ $pagesPreview ? 'Sample telemetry' : 'Realtime monitoring' }}</p>
                 <h1 class="mt-2 font-display text-3xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-4xl">
                     Server room 1 dashboard
                 </h1>
                 <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400">
-                    Temperature and humidity are now the first thing operators see, with the main telemetry graph directly underneath.
+                    {{ $pagesPreview
+                        ? 'Explore a sample server room through temperature, humidity, power usage, and equipment health.'
+                        : 'Temperature and humidity are now the first thing operators see, with the main telemetry graph directly underneath.' }}
                 </p>
-                <div class="sr-only">
-                    <p>Live PC telemetry has moved to the Server section.</p>
-                    <a href="{{ route('servers.index') }}">Open Server Section</a>
-                </div>
+                @unless ($pagesPreview)
+                    <div class="sr-only">
+                        <p>Live PC telemetry has moved to the Server section.</p>
+                        <a href="{{ route('servers.index') }}">Open Server Section</a>
+                    </div>
+                @endunless
             </div>
         </section>
 
@@ -253,11 +260,11 @@
             Left = large telemetry chart
             Right = summary widgets and status distribution
         --}}
-        <section class="grid gap-6 2xl:grid-cols-[minmax(0,1.6fr)_minmax(340px,0.84fr)]">
+        <section id="telemetry" class="grid gap-6 2xl:grid-cols-[minmax(0,1.6fr)_minmax(340px,0.84fr)]">
             <x-dashboard.chart-card
-                eyebrow="Realtime analytics"
+                :eyebrow="$pagesPreview ? 'Sample analytics' : 'Realtime analytics'"
                 title="Environmental telemetry"
-                description="Live ESP32 DHT22 readings from sensor_readings, displayed in Tunisia local time."
+                :description="$pagesPreview ? 'Temperature and humidity samples in Tunisia local time.' : 'Live ESP32 DHT22 readings from sensor_readings, displayed in Tunisia local time.'"
                 height="h-[620px]"
             >
                 <x-slot name="action">
@@ -270,7 +277,11 @@
                             <span class="h-2 w-2 rounded-full shadow-[0_0_0_5px_rgba(16,185,129,0.12)]"
                                 :class="hasTelemetryData() ? 'bg-emerald-500' : 'bg-amber-500'"
                             ></span>
-                            <span x-text="isSyncing ? 'Syncing sensor' : (hasTelemetryData() ? 'Streaming live' : 'Awaiting ESP32')"></span>
+                            @if ($pagesPreview)
+                                <span>Sample dataset</span>
+                            @else
+                                <span x-text="isSyncing ? 'Syncing sensor' : (hasTelemetryData() ? 'Streaming live' : 'Awaiting ESP32')"></span>
+                            @endif
                         </span>
                         <span class="app-pill bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300" x-text="`${trend.labels.length} samples`">
                         </span>
@@ -318,16 +329,18 @@
                         </div>
 
                         <div class="dashboard-surface-glass rounded-[26px] border border-white/70 px-5 py-4 shadow-sm dark:border-white/10 xl:min-w-[250px]">
-                            <p class="text-[11px] font-bold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">Last sensor update</p>
+                            <p class="text-[11px] font-bold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">{{ $pagesPreview ? 'Last sample' : 'Last sensor update' }}</p>
                             <p class="mt-3 font-display text-2xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white" x-text="latestTimestampLabel()"></p>
                             <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
                                 Tunisia local time
                                 <span class="font-semibold text-slate-700 dark:text-slate-200">(Africa/Tunis)</span>
                             </p>
+                            @unless ($pagesPreview)
                             <div class="mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-slate-400 dark:text-slate-500">
                                 <span class="h-2 w-2 rounded-full" :class="isSyncing ? 'bg-sky-400 animate-pulse' : 'bg-slate-300 dark:bg-slate-600'"></span>
                                 <span x-text="isSyncing ? 'Syncing chart' : 'WebSocket live'"></span>
                             </div>
+                            @endunless
                         </div>
                     </div>
 
@@ -1456,4 +1469,4 @@
             };
         };
     </script>
-</x-app-layout>
+</x-dynamic-component>

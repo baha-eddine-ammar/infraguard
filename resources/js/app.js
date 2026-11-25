@@ -78,7 +78,7 @@ watchDisplayMode('(display-mode: standalone)');
 watchDisplayMode('(display-mode: fullscreen)');
 
 const registerServiceWorker = () => {
-    if (!('serviceWorker' in navigator)) {
+    if (document.body.hasAttribute('data-pages-preview') || !('serviceWorker' in navigator)) {
         return;
     }
 
